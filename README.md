@@ -54,3 +54,78 @@ public class FilterConfig {
 필터1
 필터2
 ```
+## jwt 로그인 시도
+`http://localhost:8080/login` 시도 시 권한 오류가 확인되는 것이 아니라, 페이지를 못찾는 오류가 확인이 된다.   
+그 이유는 `security config` 설정에서 formLogin.disable()로 동작을 안하기 때문이다.
+
+![권한확인](https://github.com/haeyonghahn/spring-security-jwt/blob/master/images/%EA%B6%8C%ED%95%9C%ED%99%95%EC%9D%B8.PNG)
+```java
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+	private final CorsFilter corsFilter;
+	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class); // SecurityContextPersistenceFilter가 동작되기 전에 실행
+		http.csrf().disable();
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // session을 사용하지 않은 것
+		.and()
+		/*
+		 * 모든 요청이 들어와도 CorsFilter를 거친다. @CrossOrigin(인증이 필요없을 때), 시큐리티 필터에 등록(인증이 필요할 때)
+		 * Cross Origin 정책을 벗어난다. 모든 요청을 허용
+		 * */
+		.addFilter(corsFilter)
+		.formLogin().disable()
+		.httpBasic().disable()
+		...
+	}
+}
+```
+그렇기 때문에 `UsernamePasswordAuthenticationFilter` 를 상속받은 클래스를 `security config` 설정에 filter를 추가하여 `/login`요청을 filter 한다.
+```java
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+	
+	private final AuthenticationManager authenticationManager;
+
+	// /login 요청을 하면 로그인 시도를 위해서 실행되는 함수
+	@Override
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+			throws AuthenticationException {
+		System.out.println("JwtAuthenticationFilter : 로그인 시도중");
+		return super.attemptAuthentication(request, response);
+	}
+}
+```
+```java
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+	private final CorsFilter corsFilter;
+	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class); // SecurityContextPersistenceFilter가 동작되기 전에 실행
+		http.csrf().disable();
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // session을 사용하지 않은 것
+		.and()
+		/*
+		 * 모든 요청이 들어와도 CorsFilter를 거친다. @CrossOrigin(인증이 필요없을 때), 시큐리티 필터에 등록(인증이 필요할 때)
+		 * Cross Origin 정책을 벗어난다. 모든 요청을 허용
+		 * */
+		.addFilter(corsFilter)
+		.formLogin().disable()
+		.httpBasic().disable()
+		// WebSecurityConfigurerAdapter에 authenticationManager() 함수가 존재한다.
+		.addFilter(new JwtAuthenticationFilter(authenticationManager()))
+		...
+	}
+}
+```
+![로그인요청](https://github.com/haeyonghahn/spring-security-jwt/blob/master/images/%EB%A1%9C%EA%B7%B8%EC%9D%B8%EC%9A%94%EC%B2%AD.PNG)
+![콘솔확인](https://github.com/haeyonghahn/spring-security-jwt/blob/master/images/%EC%BD%98%EC%86%94%ED%99%95%EC%9D%B8.PNG)
