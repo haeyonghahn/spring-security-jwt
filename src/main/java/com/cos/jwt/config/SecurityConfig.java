@@ -8,6 +8,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
 
+import com.cos.jwt.config.jwt.JwtAuthenticationFilter;
 import com.cos.jwt.filter.MyFilter3;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.addFilter(corsFilter)
 		.formLogin().disable()
 		.httpBasic().disable()
+		// WebSecurityConfigurerAdapter에 authenticationManager() 함수가 존재한다.
+		.addFilter(new JwtAuthenticationFilter(authenticationManager()))
 		.authorizeRequests()
 		.antMatchers("/api/vi/user/**")
 		.access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
