@@ -4,7 +4,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cos.jwt.model.User;
@@ -13,7 +12,6 @@ import com.cos.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class RestApiController {
 
@@ -28,11 +26,6 @@ public class RestApiController {
 	@PostMapping("/token")
 	public String token() {
 		return "<h1>token</h1>";
-	}
-	
-	@GetMapping("/manager/reports")
-	public String reports() {
-		return "<h1>reports<h1>";
 	}
 	
 	@PostMapping("/join")
