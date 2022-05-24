@@ -129,3 +129,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 ```
 ![로그인요청](https://github.com/haeyonghahn/spring-security-jwt/blob/master/images/%EB%A1%9C%EA%B7%B8%EC%9D%B8%EC%9A%94%EC%B2%AD.PNG)
 ![콘솔확인](https://github.com/haeyonghahn/spring-security-jwt/blob/master/images/%EC%BD%98%EC%86%94%ED%99%95%EC%9D%B8.PNG)
+
+## JWT 서버 구축 완료
+![Authrization값](https://github.com/haeyonghahn/spring-security-jwt/blob/master/images/Authorization%EA%B0%92.png)
+![인가](https://github.com/haeyonghahn/spring-security-jwt/blob/master/images/%EC%9D%B8%EA%B0%80.png)
